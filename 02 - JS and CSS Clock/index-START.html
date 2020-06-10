@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>JS + CSS Clock</title>
 </head>
+
 <body>
 
 
-    <div class="clock">
-      <div class="clock-face">
-        <div class="hand hour-hand"></div>
-        <div class="hand min-hand"></div>
-        <div class="hand second-hand"></div>
-      </div>
+  <div class="clock">
+    <div class="clock-face">
+      <div class="hand hour-hand"></div>
+      <div class="hand min-hand"></div>
+      <div class="hand second-hand"></div>
     </div>
+  </div>
 
 
   <style>
+    :root {
+      --second-rotate: rotate(0deg);
+      --minute-rotate: rotate(0deg);
+      --hour-rotate: rotate(0deg);
+    }
+
     html {
       background: #018DED url(https://unsplash.it/1500/1000?image=881&blur=5);
       background-size: cover;
@@ -43,17 +51,18 @@
       position: relative;
       padding: 2rem;
       box-shadow:
-        0 0 0 4px rgba(0,0,0,0.1),
+        0 0 0 4px rgba(0, 0, 0, 0.1),
         inset 0 0 0 3px #EFEFEF,
         inset 0 0 10px black,
-        0 0 10px rgba(0,0,0,0.2);
+        0 0 10px rgba(0, 0, 0, 0.2);
     }
 
     .clock-face {
       position: relative;
       width: 100%;
       height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
+      transform: translateY(-3px);
+      /* account for the height of the clock hands */
     }
 
     .hand {
@@ -62,13 +71,41 @@
       background: black;
       position: absolute;
       top: 50%;
+      transform-origin: right
     }
 
+    .second-hand {
+      transform: var(--second-rotate);
+    }
+
+    .min-hand {
+      transform: var(--minute-rotate);
+    }
+
+    .hour-hand {
+      transform: var(--hour-rotate);
+    }
   </style>
-
   <script>
+    const root = document.documentElement;
 
+    const setHands = () => {
+      const currentTime = new Date();
+      const seconds = currentTime.getSeconds();
+      const minutes = currentTime.getMinutes();
+      const hours = currentTime.getHours();
 
+      const secondDegrees = ((seconds / 60) * 360) + 90;
+      const minutesDegrees = ((minutes / 60) * 360) + ((seconds / 60) * 6) + 90;
+      const hourDegrees = ((hours / 12) * 360) + ((minutes / 60) * 30) + 90;
+
+      root.style.setProperty('--second-rotate', `rotate(${secondDegrees}deg)`)
+      root.style.setProperty('--minute-rotate', `rotate(${minutesDegrees}deg)`)
+      root.style.setProperty('--hour-rotate', `rotate(${hourDegrees}deg)`)
+    }
+
+    setInterval(setHands, 1000);
   </script>
 </body>
+
 </html>
