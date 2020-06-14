@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Scoped CSS Variables and JS</title>
 </head>
+
 <body>
   <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
 
@@ -18,13 +20,18 @@
     <input id="base" type="color" name="base" value="#ffc600">
   </div>
 
-  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
+  <img class="modify-class" src="http://source.unsplash.com/7bwQXzbF6KE/800x500">
 
   <style>
-
     /*
       misc styles, nothing to do with CSS variables
     */
+
+    :root {
+      --blur: 10px;
+      --bgColour: #ffc600;
+      --padding: 10px;
+    }
 
     body {
       text-align: center;
@@ -42,10 +49,42 @@
     input {
       width: 100px;
     }
+
+    .modify-class {
+      filter: blur(var(--blur));
+      background: var(--bgColour);
+      padding: var(--padding);
+    }
+
+    .hl {
+      color: var(--bgColour)
+    }
   </style>
 
   <script>
+    const root = document.documentElement;
+    const blurGauge = document.getElementById('blur');
+    const paddingGauge = document.getElementById('spacing');
+    const colorGauge = document.getElementById('base');
+
+    const changeHandler = (property, e) => {
+      const propertyValue = property === '--bgColour' ? e.target.value : `${e.target.value}px`;
+      root.style.setProperty(property, propertyValue)
+    }
+
+    blurGauge.addEventListener('change', (e) => {
+      changeHandler('--blur', e)
+    });
+
+    paddingGauge.addEventListener('change', (e) => {
+      changeHandler('--padding', e)
+    });
+
+    colorGauge.addEventListener('change', (e) => {
+      changeHandler('--bgColour', e)
+    })
   </script>
 
 </body>
+
 </html>
