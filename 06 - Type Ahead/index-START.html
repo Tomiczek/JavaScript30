@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <form class="search-form">
@@ -14,9 +16,57 @@
       <li>or a state</li>
     </ul>
   </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  <script>
+    const endpoint =
+      'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
-</script>
+    const input = document.querySelector('.search');
+    const listOfSuggestion = document.querySelector('.suggestions');
+
+    const removeListItems = () => {
+      listOfSuggestion.querySelectorAll('li').forEach(item => listOfSuggestion.removeChild(item));
+    }
+
+    const createListItem = () => {
+      return document.createElement('li');
+    }
+
+    const listOfCities = [];
+    fetch(endpoint).then(res => res.json()).then(res => {
+      listOfCities.push(...res);
+    });
+
+    input.addEventListener('keyup', (e) => {
+      const foundCities = listOfCities.filter(singleCity => {
+        return singleCity.city.includes(e.target.value) ||
+          singleCity.state.includes(e.target.value)
+      });
+
+      removeListItems();
+
+      if (foundCities.length && e.target.value) {
+        foundCities.forEach(item => {
+          const defaultListItem = createListItem();
+          const regex = new RegExp(e.target.value, 'gi');
+
+          const cityName = item.city.replace(regex, `<span class="hl">${e.target.value}</span>`);
+          const stateName = item.state.replace(regex, `<span class="hl">${e.target.value}</span>`);
+
+          defaultListItem.innerHTML = `
+        <span class="name">${cityName}, ${stateName}</span>
+        <span class="population">${Number(item.population).toLocaleString()}</span>
+    `
+          listOfSuggestion.appendChild(defaultListItem)
+        })
+      } else if (!e.target.value) {
+        ['Filter for a city', 'or a state'].forEach(item => {
+          const defaultListItem = createListItem();
+          defaultListItem.innerText = item;
+          listOfSuggestion.appendChild(defaultListItem)
+        })
+      }
+    })
+  </script>
 </body>
+
 </html>
